@@ -11,17 +11,19 @@ def get_requirements():
 with open('README.md') as f:
     README = f.read()
 
-with open('LICENSE') as f:
-    LICENSE = f.read()
-
 setup(
     name='instpector',
     version='0.1.0',
     description='The Instagram web command line interface',
     long_description=README,
+    long_description_content_type="text/markdown",
     author='Erik Lopez',
-    url='https://github.com/niuware/instpector',
-    license=LICENSE,
+    url='https://github.com/niuware/instpector/archive/0.1.0.tar.gz',
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
     packages=find_packages(exclude=('examples', 'tests')),
     install_requires=get_requirements()
 )
