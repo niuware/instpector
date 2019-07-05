@@ -2,13 +2,13 @@ from setuptools import setup, find_packages
 
 def get_requirements():
     requirements = []
-    with open('requirements.txt') as req_file:
+    with open('requirements.txt', 'r') as req_file:
         source = req_file.read()
         if source:
             requirements = source.splitlines()
     return requirements
 
-with open('README.md') as f:
+with open('README.md', 'r') as f:
     README = f.read()
 
 setup(
@@ -18,7 +18,8 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     author='Erik Lopez',
-    url='https://github.com/niuware/instpector/archive/0.1.0.tar.gz',
+    url='https://github.com/niuware/instpector',
+    download_url='https://github.com/niuware/instpector/archive/0.1.0.tar.gz',
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
