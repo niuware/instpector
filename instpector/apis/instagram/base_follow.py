@@ -2,7 +2,7 @@ from ..base_api import BaseApi
 from ..exceptions import ParseDataException
 from .definitions import TPageInfo
 
-class BaseFollowEdge(BaseApi):
+class BaseFollow(BaseApi):
     DEFAULT_EDGE_COUNT = 12
 
     def __init__(self, query_hash, browser_session):
