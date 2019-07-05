@@ -2,6 +2,7 @@ import json
 from ..http_request import HttpRequest, HttpRequestMode
 from ..exceptions import AuthenticateFailException, AuthenticateRevokeException
 
+
 class Authenticate(HttpRequest):
 
     def __init__(self, browser_session, user, password, app_info):

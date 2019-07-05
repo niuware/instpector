@@ -1,14 +1,7 @@
-from .definitions import TUser, TPageInfo, TProfile
+from .definitions import TUser, TPageInfo, TProfile, TTimelinePost
+
 
 class Parser:
-
-    @staticmethod
-    def followers_page_info(data):
-        return Parser._follow_page_info(data, "edge_followed_by")
-
-    @staticmethod
-    def following_page_info(data):
-        return Parser._follow_page_info(data, "edge_follow")
 
     @staticmethod
     def followers(data):
@@ -45,7 +38,7 @@ class Parser:
             is_private=is_private)
 
     @staticmethod
-    def _follow_page_info(data, endpoint):
+    def page_info(data, endpoint):
         end_cursor = ""
         has_next_page = False
         try:
@@ -60,13 +53,7 @@ class Parser:
 
     @staticmethod
     def _follow_edge(data, endpoint):
-        edges = []
-        try:
-            root = data["data"]["user"][endpoint]
-            edges = root["edges"]
-        except KeyError:
-            print(f"Error parsing follow_edge for {endpoint}")
-        for edge in edges:
+        for edge in Parser._get_edges(data, endpoint):
             node = edge["node"]
             follower = TUser(
                 id=node["id"],
@@ -75,3 +62,26 @@ class Parser:
                 is_private=node["is_private"]
             )
             yield follower
+
+    @staticmethod
+    def timeline(data):
+        for edge in Parser._get_edges(data, "edge_owner_to_timeline_media"):
+            node = edge["node"]
+            post = TTimelinePost(
+                id=node["id"],
+                timestamp=node["taken_at_timestamp"],
+                is_video=node["is_video"],
+                like_count=node["edge_media_preview_like"]["count"],
+                comment_count=node["edge_media_to_comment"]["count"]
+            )
+            yield post
+
+    @staticmethod
+    def _get_edges(data, endpoint):
+        edges = []
+        try:
+            root = data["data"]["user"][endpoint]
+            edges = root["edges"]
+        except KeyError:
+            print(f"Error parsing follow_edge for {endpoint}")
+        return edges

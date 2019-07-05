@@ -27,3 +27,12 @@ def test_profile(profile_file=None):
     if path.isfile(json_file):
         data = json.loads(open(json_file, "r").read())
         print(Parser.profile(data))
+
+def test_timeline(timeline_file=None):
+    json_file = "tests/timeline.json"
+    if timeline_file:
+        json_file = timeline_file
+    if path.isfile(json_file):
+        data = json.loads(open(json_file, "r").read())
+        for post in Parser.timeline(data):
+            print(post)

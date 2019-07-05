@@ -2,6 +2,7 @@ from ..base_api import BaseApi
 from ..exceptions import ParseDataException
 from .parser import Parser
 
+
 class Profile(BaseApi):
 
     def __init__(self, browser_session):
