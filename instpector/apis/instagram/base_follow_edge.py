@@ -1,8 +1,8 @@
-import json
-from ..http_request import HttpRequest
+from ..base_api import BaseApi
+from ..exceptions import ParseDataException
 from .definitions import TPageInfo
 
-class BaseFollowEdge(HttpRequest):
+class BaseFollowEdge(BaseApi):
     DEFAULT_EDGE_COUNT = 12
 
     def __init__(self, query_hash, browser_session):
@@ -30,10 +30,8 @@ class BaseFollowEdge(HttpRequest):
                 f",\"after\":\"{cursor}\"}}"
             )
         }
-        response = self.get("/graphql/query/", params=params)
-        if response.status_code == 200:
-            try:
-                return json.loads(response.text)
-            except json.decoder.JSONDecodeError:
-                print(f"Invalid data for query_hash {self._query_hash} and user_id {user_id}")
+        try:
+            return super().get("/graphql/query/", params=params)
+        except ParseDataException:
+            print(f"Invalid data for user id {user_id}")
         return None

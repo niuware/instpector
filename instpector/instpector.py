@@ -1,5 +1,5 @@
 import requests
-from .apis.instagram import Authenticate, Followers, Following
+from .apis.instagram import Authenticate, Followers, Following, Profile
 from .apis.exceptions import AuthenticateFailException, AuthenticateRevokeException
 
 class Instpector:
@@ -38,3 +38,6 @@ class Instpector:
 
     def following(self):
         return Following(self._browser_session)
+
+    def profile(self):
+        return Profile(self._browser_session)

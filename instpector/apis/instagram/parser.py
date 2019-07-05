@@ -1,4 +1,4 @@
-from .definitions import TUser, TPageInfo
+from .definitions import TUser, TPageInfo, TProfile
 
 class Parser:
 
@@ -17,6 +17,32 @@ class Parser:
     @staticmethod
     def following(data):
         return Parser._follow_edge(data, "edge_follow")
+
+    @staticmethod
+    def profile(data):
+        user_id = ""
+        username = ""
+        biography = ""
+        followers_count = 0
+        following_count = 0
+        is_private = False
+        try:
+            user = data["graphql"]["user"]
+            user_id = user["id"]
+            username = user["username"]
+            biography = user["biography"]
+            followers_count = user["edge_followed_by"]["count"]
+            following_count = user["edge_follow"]["count"]
+            is_private = user["is_private"]
+        except KeyError:
+            print(f"Error parsing profile")
+        return TProfile(
+            id=user_id,
+            username=username,
+            biography=biography,
+            followers_count=followers_count,
+            following_count=following_count,
+            is_private=is_private)
 
     @staticmethod
     def _follow_page_info(data, endpoint):
