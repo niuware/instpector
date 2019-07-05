@@ -39,7 +39,8 @@ class HttpRequest:
         return self._session.get(f"{self._base_url}{url_path}",
                                  headers=request_headers,
                                  params=get_params,
-                                 allow_redirects=options.get("redirects", False))
+                                 allow_redirects=options.get("redirects", False),
+                                 timeout=10)
 
     def post(self, url_path, data, **options):
         request_headers = self._get_headers(
@@ -50,7 +51,8 @@ class HttpRequest:
         return self._session.post(f"{self._base_url}{url_path}",
                                   data=post_data,
                                   headers=post_headers,
-                                  allow_redirects=options.get("redirects", False))
+                                  allow_redirects=options.get("redirects", False),
+                                  timeout=10)
 
     @classmethod
     def _get_headers(cls, mode, headers):
