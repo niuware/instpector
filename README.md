@@ -13,10 +13,7 @@ pip install instpector
 ```python
 from instpector import Instpector
 
-instpector = Instpector({
-    "ig_app_id": "app_id",
-    "ig_ajax_id": "ajax_id"
-})
+instpector = Instpector()
 
 # Login to Instagram web
 if not instpector.login("my_username", "my_password"):

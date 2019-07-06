@@ -3,4 +3,5 @@ __pycache__
 env
 *.egg-info
 dist
-tests/*.json
+tests/*.js*
+tests/*.html

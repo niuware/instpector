@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='instpector',
-    version='0.1.1',
+    version='0.1.2',
     description='The Instagram web command line interface',
     author='Erik Lopez',
     long_description=README,

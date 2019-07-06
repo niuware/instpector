@@ -1,11 +1,12 @@
 import json
 from ..http_request import HttpRequest, HttpRequestMode
 from ..exceptions import AuthenticateFailException, AuthenticateRevokeException
+from .utilities import get_ajax_id, get_consumer_lib_path, get_app_id
 
 
 class Authenticate(HttpRequest):
 
-    def __init__(self, browser_session, user, password, app_info):
+    def __init__(self, browser_session, user, password, app_info=None):
         self._user = user
         self._password = password
         self._app_info = app_info
@@ -39,6 +40,14 @@ class Authenticate(HttpRequest):
             raise AuthenticateRevokeException("Logout unsuccessful")
         print("Logged out")
 
+    def _lookup_headers(self):
+        html = self.get("/", stream=True)
+        ajax_id = get_ajax_id(html.text)
+        js_lib_path = get_consumer_lib_path(html.iter_lines(decode_unicode=True))
+        js_lib = self.get(js_lib_path)
+        app_id = get_app_id(js_lib.text)
+        return app_id, ajax_id
+
     def _login_prepare(self):
         headers = {
             "Upgrade-Insecure-Requests": "1"
@@ -48,6 +57,12 @@ class Authenticate(HttpRequest):
                             headers=headers,
                             redirects=True)
         self._auth_headers = response.cookies.get_dict(".instagram.com")
+        if not self._app_info:
+            app_id, ajax_id = self._lookup_headers()
+            self._app_info = {
+                "ig_app_id": app_id,
+                "ig_ajax_id": ajax_id
+            }
 
     def _login_execute(self):
         data = {
