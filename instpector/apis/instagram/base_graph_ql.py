@@ -1,6 +1,6 @@
 import json
-from ..base_api import BaseApi
 from ..exceptions import ParseDataException
+from .base_api import BaseApi
 from .parser import Parser
 from .definitions import TPageInfo
 

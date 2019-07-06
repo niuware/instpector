@@ -1,7 +1,7 @@
 import json
 from time import sleep
-from .http_request import HttpRequest
-from .exceptions import ParseDataException
+from ..http_request import HttpRequest
+from ..exceptions import ParseDataException
 
 class BaseApi(HttpRequest):
     def get(self, url_path, **options):

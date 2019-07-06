@@ -1,6 +1,6 @@
 # Instpector
 
-The Instagram web command line interface tool.
+Simple Instagram web API library written in Python 3. Just login with your web user and password and start using. No selenium or webdriver required.
 
 # Installation
 
@@ -8,14 +8,14 @@ The Instagram web command line interface tool.
 pip install instpector
 ```
 
-# Example
+# Sample usage
 
 ```python
 from instpector import Instpector
 
 instpector = Instpector()
 
-# Login to Instagram web
+# Login into Instagram's web
 if not instpector.login("my_username", "my_password"):
     return
 
@@ -34,12 +34,14 @@ for follower in followers.get_all_for(insta_profile.id):
 
 Check more details in the `examples` directory.
 
-# Current APIs
+# Available endpoints
 
 - Followers   
 - Following   
 - Timeline   
 - Profile   
+
+More to come
 
 # Disclaimer
 
