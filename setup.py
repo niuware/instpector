@@ -11,7 +11,7 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     url='https://github.com/niuware/instpector',
-    download_url='https://github.com/niuware/instpector/archive/0.1.1.tar.gz',
+    download_url='https://github.com/niuware/instpector/archive/0.1.2.tar.gz',
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
