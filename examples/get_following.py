@@ -8,7 +8,7 @@ def get_following(**options):
 
     following = endpoints.factory.create("following", instpector)
 
-    for followee in following.get_all_for(options.get("target_user_id")):
+    for followee in following.of_user(options.get("target_user_id")):
         print(followee)
 
     instpector.logout()

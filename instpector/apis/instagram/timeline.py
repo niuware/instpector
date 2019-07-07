@@ -4,7 +4,7 @@ from .parser import Parser
 
 class Timeline(BaseGraphQL):
 
-    def get_all_for(self, user_id):
+    def of_user(self, user_id):
         variables = {
             "id": user_id,
             "first": self.DEFAULT_EDGE_COUNT

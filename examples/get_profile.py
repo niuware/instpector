@@ -9,7 +9,7 @@ def get_profile(**options):
 
     profile = endpoints.factory.create("profile", instpector)
 
-    print(profile.get_for(options.get("target_username")))
+    print(profile.of_user(options.get("target_username")))
 
     instpector.logout()
 

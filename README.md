@@ -20,13 +20,13 @@ instpector.login("my_username", "my_password")
 
 # Get the profile of any user, for example 'some_username'
 profile = endpoints.factory.create("profile", instpector)
-insta_profile = profile.get_for("some_username")
+insta_profile = profile.of_user("some_username")
 print(insta_profile)
 # id, followers_count, following_count, is_private, ... 
 
 # Iterate all followers of 'some_username'
 followers = endpoints.factory.create("followers", instpector)
-for follower in followers.get_all_for(insta_profile.id):
+for follower in followers.of_user(insta_profile.id):
     print(follower)
     # id, username, full_name, ...
 

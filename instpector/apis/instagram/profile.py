@@ -8,7 +8,7 @@ class Profile(BaseApi):
     def __init__(self, browser_session):
         super().__init__("https://www.instagram.com", browser_session)
 
-    def get_for(self, username):
+    def of_user(self, username):
         params = {
             "__a": 1
         }

@@ -8,7 +8,7 @@ def get_timeline(**options):
 
     timeline = endpoints.factory.create("timeline", instpector)
 
-    for post in timeline.get_all_for(options.get("target_user_id")):
+    for post in timeline.of_user(options.get("target_user_id")):
         print(post)
 
     instpector.logout()
