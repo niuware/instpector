@@ -1,12 +1,12 @@
 from sys import argv
-from context import Instpector #pylint: disable=no-name-in-module
+from context import Instpector, endpoints
 
 def get_followers(**options):
     instpector = Instpector()
     if not instpector.login(user=options.get("user"), password=options.get("password")):
         return
 
-    followers = instpector.followers()
+    followers = endpoints.factory.create("followers", instpector)
 
     for follower in followers.get_all_for(options.get("target_user_id")):
         print(follower)

@@ -1,6 +1,6 @@
 # Instpector
 
-Simple Instagram web API library written in Python 3. Just login with your web user and password and start using. No selenium or webdriver required.
+A simple Instagram's web API library written in Python. Login with your web user and password and you are ready to go. No selenium or webdriver required.
 
 # Installation
 
@@ -11,28 +11,30 @@ pip install instpector
 # Sample usage
 
 ```python
-from instpector import Instpector
+from instpector import Instpector, endpoints
 
 instpector = Instpector()
 
 # Login into Instagram's web
-if not instpector.login("my_username", "my_password"):
-    return
+instpector.login("my_username", "my_password")
 
 # Get the profile of any user, for example 'some_username'
-profile = instpector.profile()
+profile = endpoints.factory.create("profile", instpector)
 insta_profile = profile.get_for("some_username")
 print(insta_profile)
 # id, followers_count, following_count, is_private, ... 
 
 # Iterate all followers of 'some_username'
-followers = instpector.followers()
+followers = endpoints.factory.create("followers", instpector)
 for follower in followers.get_all_for(insta_profile.id):
     print(follower)
     # id, username, full_name, ...
+
+# Logout
+instpector.logout()
 ```
 
-Check more details in the `examples` directory.
+Check more in the `examples` directory.
 
 # Available endpoints
 
@@ -42,6 +44,10 @@ Check more details in the `examples` directory.
 - Profile   
 
 More to come
+
+# Development dependencies
+
+- requests
 
 # Disclaimer
 

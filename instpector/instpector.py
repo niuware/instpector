@@ -1,5 +1,5 @@
 import requests
-from .apis.instagram import Authenticate, Followers, Following, Profile, Timeline
+from .apis.instagram import Authenticate
 from .apis.exceptions import AuthenticateFailException, AuthenticateRevokeException
 
 class Instpector:
@@ -12,8 +12,8 @@ class Instpector:
         if self._browser_session:
             self._browser_session.close()
 
-    def setup_app(self, app_info):
-        self._app_info = app_info
+    def session(self):
+        return self._browser_session
 
     def login(self, user, password):
         self._auth = Authenticate(self._browser_session, user, password, self._app_info)
@@ -32,15 +32,3 @@ class Instpector:
             self._auth.logout()
         except AuthenticateRevokeException as auth_exception:
             print(f"AuthenticateRevokeException: {auth_exception}")
-
-    def followers(self):
-        return Followers(self._browser_session)
-
-    def following(self):
-        return Following(self._browser_session)
-
-    def profile(self):
-        return Profile(self._browser_session)
-
-    def timeline(self):
-        return Timeline(self._browser_session)

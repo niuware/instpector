@@ -1,5 +1,5 @@
 from sys import argv
-from context import Instpector #pylint: disable=no-name-in-module
+from context import Instpector, endpoints
 
 def get_profile(**options):
 
@@ -7,7 +7,7 @@ def get_profile(**options):
     if not instpector.login(user=options.get("user"), password=options.get("password")):
         return
 
-    profile = instpector.profile()
+    profile = endpoints.factory.create("profile", instpector)
 
     print(profile.get_for(options.get("target_username")))
 

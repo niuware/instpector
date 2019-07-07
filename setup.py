@@ -5,13 +5,13 @@ with open('README.md', 'r') as f:
 
 setup(
     name='instpector',
-    version='0.1.3',
+    version='0.1.4',
     description='Simple Instagram web API library',
     author='Erik Lopez',
     long_description=README,
     long_description_content_type="text/markdown",
     url='https://github.com/niuware/instpector',
-    download_url='https://github.com/niuware/instpector/archive/0.1.3.tar.gz',
+    download_url='https://github.com/niuware/instpector/archive/0.1.4.tar.gz',
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
