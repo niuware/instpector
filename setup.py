@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="instpector",
-    version="0.1.4",
+    version="0.1.5",
     description="A simple Instagram's web API library",
     author="Erik Lopez",
     long_description=README,

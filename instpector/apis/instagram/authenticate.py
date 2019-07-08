@@ -36,7 +36,7 @@ class Authenticate(HttpRequest):
                              mode=HttpRequestMode.FORM,
                              data=data,
                              headers=headers)
-        if response.status_code != 301:
+        if not response or response.status_code != 301:
             raise AuthenticateRevokeException("Logout unsuccessful")
         print("Logged out")
 
@@ -56,6 +56,8 @@ class Authenticate(HttpRequest):
                             mode=HttpRequestMode.FORM,
                             headers=headers,
                             redirects=True)
+        if not response:
+            return
         self._auth_headers = response.cookies.get_dict(".instagram.com")
         if not self._app_info:
             app_id, ajax_id = self._lookup_headers()
@@ -86,7 +88,7 @@ class Authenticate(HttpRequest):
             data = json.loads(response.text)
             self._auth_cookies = response.cookies.get_dict(".instagram.com")
             return self._parse_login(data)
-        except json.decoder.JSONDecodeError:
+        except (json.decoder.JSONDecodeError, AttributeError):
             raise AuthenticateFailException("Unexpected login response.")
 
     def _parse_login(self, data):

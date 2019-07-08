@@ -6,6 +6,8 @@ from ..exceptions import ParseDataException
 class BaseApi(HttpRequest):
     def get(self, url_path, **options):
         response = super().get(url_path, **options)
+        if not response:
+            return None
         # Retry just once when rate limit has been exceeded
         if response.status_code == 429:
             print("The rate limit has been reached. Resuming in 3 min...")

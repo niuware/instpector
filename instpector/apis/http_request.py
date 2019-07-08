@@ -1,5 +1,6 @@
 from enum import Enum
 from urllib.parse import urlencode
+from requests import RequestException
 
 class HttpRequestMode(Enum):
     JSON = 1
@@ -36,11 +37,15 @@ class HttpRequest:
         get_params = {}
         if options.get("params"):
             get_params = options.get("params")
-        return self._session.get(f"{self._base_url}{url_path}",
-                                 headers=request_headers,
-                                 params=get_params,
-                                 allow_redirects=options.get("redirects", False),
-                                 timeout=10)
+        try:
+            return self._session.get(f"{self._base_url}{url_path}",
+                                     headers=request_headers,
+                                     params=get_params,
+                                     allow_redirects=options.get("redirects", False),
+                                     timeout=10)
+        except RequestException as req_exception:
+            print(f"GET RequestException: {req_exception}")
+            return None
 
     def post(self, url_path, data, **options):
         request_headers = self._get_headers(
@@ -48,11 +53,15 @@ class HttpRequest:
             options.get("headers"))
         post_data = urlencode(data)
         post_headers = {**request_headers, "Content-Length": str(len(post_data))}
-        return self._session.post(f"{self._base_url}{url_path}",
-                                  data=post_data,
-                                  headers=post_headers,
-                                  allow_redirects=options.get("redirects", False),
-                                  timeout=10)
+        try:
+            return self._session.post(f"{self._base_url}{url_path}",
+                                      data=post_data,
+                                      headers=post_headers,
+                                      allow_redirects=options.get("redirects", False),
+                                      timeout=10)
+        except RequestException as req_exception:
+            print(f"POST RequestException: {req_exception}")
+            return None
 
     @classmethod
     def _get_headers(cls, mode, headers):
