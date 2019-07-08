@@ -12,7 +12,7 @@ setup(
     long_description_content_type="text/markdown",
     keywords="instagram web-api instagram-client",
     url="https://github.com/niuware/instpector",
-    download_url="https://github.com/niuware/instpector/archive/0.1.4.tar.gz",
+    download_url="https://github.com/niuware/instpector/archive/0.1.5.tar.gz",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
