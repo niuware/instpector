@@ -36,3 +36,21 @@ def test_timeline(timeline_file=None):
         data = json.loads(open(json_file, "r").read())
         for post in Parser.timeline(data):
             print(post)
+
+def test_story_reel(story_reel_file=None):
+    json_file = "tests/story_reel.json"
+    if story_reel_file:
+        json_file = story_reel_file
+    if path.isfile(json_file):
+        data = json.loads(open(json_file, "r").read())
+        for item in Parser.story_reel(data):
+            print(item)
+
+def test_story(story_file=None):
+    json_file = "tests/story.json"
+    if story_file:
+        json_file = story_file
+    if path.isfile(json_file):
+        data = json.loads(open(json_file, "r").read())
+        for item in Parser.story(data):
+            print(item)

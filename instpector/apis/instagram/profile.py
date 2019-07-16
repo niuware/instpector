@@ -12,11 +12,10 @@ class Profile(BaseApi):
         params = {
             "__a": 1
         }
-        headers = {
-            "DNT": "1"
-        }
         try:
-            data = super().get(f"/{username}/", params=params, headers=headers)
+            data = super().get(f"/{username}/", params=params, headers={
+                "DNT": "1"
+            })
             if data:
                 return Parser.profile(data)
         except ParseDataException:

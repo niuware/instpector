@@ -1,6 +1,6 @@
 # Instpector
 
-A simple Instagram's web API library written in Python. Login with your web user and password and you are ready to go. No selenium or webdriver required.
+A simple Instagram's web API library written in Python. No selenium or webdriver required.
 
 # Installation
 
@@ -42,6 +42,8 @@ Check more in the `examples` directory.
 - Following   
 - Timeline   
 - Profile   
+- Story Reel    
+- Story    
 
 More to come
 

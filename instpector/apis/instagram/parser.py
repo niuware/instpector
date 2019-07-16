@@ -1,4 +1,4 @@
-from .definitions import TUser, TPageInfo, TProfile, TTimelinePost
+from .definitions import TUser, TPageInfo, TProfile, TTimelinePost, TStoryReelItem, TStoryViewer
 
 
 class Parser:
@@ -27,7 +27,7 @@ class Parser:
             followers_count = user["edge_followed_by"]["count"]
             following_count = user["edge_follow"]["count"]
             is_private = user["is_private"]
-        except KeyError:
+        except (KeyError, TypeError):
             print(f"Error parsing profile")
         return TProfile(
             id=user_id,
@@ -38,14 +38,15 @@ class Parser:
             is_private=is_private)
 
     @staticmethod
-    def page_info(data, endpoint):
+    def page_info(data, endpoint, d_path=None):
         end_cursor = ""
         has_next_page = False
+        data_path = d_path or "user"
         try:
-            root = data["data"]["user"][endpoint]
+            root = data["data"][data_path][endpoint]
             end_cursor = root["page_info"]["end_cursor"]
             has_next_page = root["page_info"]["has_next_page"]
-        except KeyError:
+        except (KeyError, TypeError):
             print(f"Error parsing follow_page_info for {endpoint}")
         return TPageInfo(
             end_cursor=end_cursor,
@@ -77,11 +78,42 @@ class Parser:
             yield post
 
     @staticmethod
-    def _get_edges(data, endpoint):
+    def _get_edges(data, endpoint, d_path=None):
         edges = []
+        data_path = d_path or "user"
         try:
-            root = data["data"]["user"][endpoint]
+            root = data["data"][data_path][endpoint]
             edges = root["edges"]
-        except KeyError:
+        except (KeyError, TypeError):
             print(f"Error parsing follow_edge for {endpoint}")
         return edges
+
+    @staticmethod
+    def story_reel(data):
+        try:
+            root = data["data"]["reels_media"]
+            if root:
+                items = root[0]["items"]
+                for item in items:
+                    post = TStoryReelItem(
+                        id=item["id"],
+                        timestamp=item["taken_at_timestamp"],
+                        expire_at=item["expiring_at_timestamp"],
+                        is_video=item["is_video"],
+                        view_count=item["edge_story_media_viewers"]["count"],
+                        audience=item["audience"]
+                    )
+                    yield post
+        except (KeyError, TypeError):
+            print(f"Error parsing story_reel")
+
+    @staticmethod
+    def story(data):
+        edges = Parser._get_edges(data, "edge_story_media_viewers", "media")
+        for edge in edges:
+            node = edge["node"]
+            viewer = TStoryViewer(
+                id=node["id"],
+                username=node["username"]
+            )
+            yield viewer

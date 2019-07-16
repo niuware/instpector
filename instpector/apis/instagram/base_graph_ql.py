@@ -16,16 +16,22 @@ class BaseGraphQL(BaseApi):
         while True:
             if not page_info.has_next_page:
                 return
-            data = self._get_partial_data(query_hash, variables, page_info.end_cursor)
+            next_cursor_name = parser_callbacks.get("page_info_next_cursor")
+            data = self._get_partial_data(query_hash, variables, page_info.end_cursor,
+                                          next_cursor_name)
             if data:
-                page_info = Parser.page_info(data, parser_callbacks.get("page_info_parser"))
+                page_info = Parser.page_info(data, parser_callbacks.get("page_info_parser"),
+                                             parser_callbacks.get("page_info_parser_path"))
                 for result in parser_callbacks.get("data_parser")(data):
                     yield result
 
-    def _get_partial_data(self, query_hash, variables, end_cursor):
+    def _get_partial_data(self, query_hash, variables, end_cursor, cursor_name):
+        cursor_name = cursor_name or "after"
         cursor = end_cursor or ""
+        if cursor_name != "after" and not cursor:
+            cursor = "0"
         cursor_param = {
-            "after": cursor
+            cursor_name: cursor
         }
         post_variables = json.dumps({**variables, **cursor_param})
         params = {
