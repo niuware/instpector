@@ -51,6 +51,16 @@ More to come
 
 - requests
 
+# Tests
+
+1. Create a `pytest.ini` file with the sample contents of  `pytest.sample.ini` in the `tests` directory.
+
+2. Add your account information. 
+3. Run with `pytest`:
+```
+(env)$ pytest -qs tests
+```
+
 # Disclaimer
 
 This tool is not affiliated with, authorized, maintained or endorsed by Instagram or any of its affiliates or subsidiaries. Use at your own risk.

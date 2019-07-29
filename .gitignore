@@ -3,5 +3,4 @@ __pycache__
 env
 *.egg-info
 dist
-tests/*.js*
-tests/*.html
+pytest.ini
