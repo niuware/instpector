@@ -54,7 +54,7 @@ class TestApi:
         story = endpoints.factory.create("story", instance)
         first = None
         for viewer in story.viewers_for(TestApi.story_id):
-            first = viewer.username
+            first = viewer
             break
         assert type(first).__name__ == "TStoryViewer"
         assert first.id != ""
