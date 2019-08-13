@@ -1,6 +1,8 @@
 # Instpector
 
-A simple Instagram's web API library written in Python. No selenium or webdriver required.
+A simple Instagram's web API library written in Python. No selenium or webdriver required. 
+
+Login with two-factor authentication enabled is supported.
 
 # Installation
 
@@ -32,6 +34,20 @@ for follower in followers.of_user(insta_profile.id):
 
 # Logout
 instpector.logout()
+```
+
+## Using 2FA
+For login in using two-factor authentication, generate your 2fa key on Instagram's app and provide the code when logging in with `instpector`. The following example uses `pytop` to demonstrate the usage:
+
+```python
+from pyotp import TOTP
+from instpector import Instpector, endpoints
+
+instpector = Instpector()
+totp = TOTP("my_2fa_key") # Input without spaces
+
+# Login into Instagram's web
+instpector.login("my_username", "my_password", totp.now())
 ```
 
 Check more in the `examples` directory.

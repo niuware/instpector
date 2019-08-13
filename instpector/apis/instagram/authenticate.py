@@ -6,10 +6,11 @@ from .utilities import get_ajax_id, get_consumer_lib_path, get_app_id
 
 class Authenticate(HttpRequest):
 
-    def __init__(self, browser_session, user, password, app_info=None):
+    def __init__(self, browser_session, user, password, two_factor_code):
         self._user = user
         self._password = password
-        self._app_info = app_info
+        self._two_factor_code = two_factor_code
+        self._app_info = None
         self._auth_headers = {}
         self._auth_cookies = {}
         super().__init__("https://www.instagram.com", browser_session)
@@ -59,12 +60,11 @@ class Authenticate(HttpRequest):
         if not response:
             return
         self._auth_headers = response.cookies.get_dict(".instagram.com")
-        if not self._app_info:
-            app_id, ajax_id = self._lookup_headers()
-            self._app_info = {
-                "ig_app_id": app_id,
-                "ig_ajax_id": ajax_id
-            }
+        app_id, ajax_id = self._lookup_headers()
+        self._app_info = {
+            "ig_app_id": app_id,
+            "ig_ajax_id": ajax_id
+        }
 
     def _login_execute(self):
         data = {
@@ -73,6 +73,18 @@ class Authenticate(HttpRequest):
             "queryParams": "{\"source\":\"auth_switcher\"}",
             "optIntoOneTap": "true"
         }
+        self._attempt_login("/accounts/login/ajax/", data, self._two_factor_code is not None)
+
+    def _login_two_factor(self, identifier):
+        data = {
+            "username": self._user,
+            "verificationCode": self._two_factor_code,
+            "queryParams": "{\"source\":\"auth_switcher\", \"next\":\"/\"}",
+            "identifier": identifier
+        }
+        self._attempt_login("/accounts/login/ajax/two_factor/", data)
+
+    def _attempt_login(self, url, data, use_2fa=False):
         headers = {
             "Referer": "https://www.instagram.com/accounts/login/?source=auth_switcher",
             "X-CSRFToken": self._auth_headers.get("csrftoken"),
@@ -80,20 +92,25 @@ class Authenticate(HttpRequest):
             "X-IG-App-ID": self._app_info.get("ig_app_id", ""),
             "Content-Type": "application/x-www-form-urlencoded",
         }
-        response = self.post("/accounts/login/ajax/",
+        response = self.post(url,
                              data=data,
                              headers=headers,
                              redirects=True)
         try:
             data = json.loads(response.text)
             self._auth_cookies = response.cookies.get_dict(".instagram.com")
-            return self._parse_login(data)
+            self._parse_login(data, use_2fa)
         except (json.decoder.JSONDecodeError, AttributeError):
             raise AuthenticateFailException("Unexpected login response.")
 
-    def _parse_login(self, data):
-        if data and data.get("authenticated"):
-            user_id = data.get("userId")
-            print(f"Logged in as {self._user} (Id: {user_id})")
-            return
+    def _parse_login(self, data, use_2fa):
+        if data:
+            if data.get("authenticated"):
+                user_id = data.get("userId")
+                print(f"Logged in as {self._user} (Id: {user_id})")
+                return
+            if use_2fa and data.get("two_factor_required")\
+               and data.get("two_factor_info"):
+                self._login_two_factor(data.get("two_factor_info").get("two_factor_identifier"))
+                return
         raise AuthenticateFailException("Login unsuccessful")
