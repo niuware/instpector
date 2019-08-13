@@ -1,7 +1,7 @@
 import re
 
 def get_ajax_id(content):
-    match = re.findall(r"\"rollout_hash\":\"([\w]+)\"", content)
+    match = re.findall(r"\"rollout_hash\":\"([\w-]+)\"", content)
     if match:
         return match[0]
     return ""
