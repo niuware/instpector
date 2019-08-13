@@ -1,6 +1,7 @@
 import configparser
 import atexit
 import pytest
+from pyotp import TOTP
 from instpector import Instpector
 
 CONFIG = configparser.ConfigParser()
@@ -8,7 +9,10 @@ CONFIG.read("tests/pytest.ini")
 
 INSTANCE = Instpector()
 USERNAME = CONFIG["account"]["username"]
-INSTANCE.login(user=USERNAME, password=CONFIG["account"]["password"])
+TOTP_INSTANCE = TOTP(CONFIG["account"]["tf_key"])
+INSTANCE.login(user=USERNAME,
+               password=CONFIG["account"]["password"],
+               two_factor_code=TOTP_INSTANCE.now())
 
 def on_finish():
     if INSTANCE:

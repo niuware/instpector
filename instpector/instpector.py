@@ -3,9 +3,8 @@ from .apis.instagram import Authenticate
 from .apis.exceptions import AuthenticateFailException, AuthenticateRevokeException
 
 class Instpector:
-    def __init__(self, app_info=None):
+    def __init__(self):
         self._auth = None
-        self._app_info = app_info
         self._browser_session = requests.session()
 
     def __del__(self):
@@ -15,8 +14,8 @@ class Instpector:
     def session(self):
         return self._browser_session
 
-    def login(self, user, password):
-        self._auth = Authenticate(self._browser_session, user, password, self._app_info)
+    def login(self, user, password, two_factor_code=None):
+        self._auth = Authenticate(self._browser_session, user, password, two_factor_code)
         try:
             self._auth.login()
             return True
