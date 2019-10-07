@@ -101,7 +101,9 @@ class Parser:
                         expire_at=item["expiring_at_timestamp"],
                         is_video=item["is_video"],
                         view_count=item["edge_story_media_viewers"]["count"],
-                        audience=item["audience"]
+                        audience=item["audience"],
+                        display_resources=item["display_resources"],
+                        video_resources=item["video_resources"]
                     )
                     yield post
         except (KeyError, TypeError):

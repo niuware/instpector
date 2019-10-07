@@ -33,3 +33,16 @@ class StoryReel(BaseApi):
         except ParseDataException:
             print(f"Invalid story reel data for user id {user_id}")
         return None
+
+    def download(self, story_item, low_quality=False):
+        self._download_resources(story_item, "display_resources", "jpg", low_quality)
+        self._download_resources(story_item, "video_resources", "mp4", low_quality)
+
+    def _download_resources(self, story_item, name, extension, low_quality):
+        try:
+            resources = getattr(story_item, name)
+        except AttributeError:
+            return
+        if resources:
+            quality = (len(resources) - 1) if not low_quality else 0
+            super().download_file(resources[quality].get("src"), f"{story_item.id}.{extension}")

@@ -10,6 +10,8 @@ TProfile = namedtuple("TProfile", (
 
 TTimelinePost = namedtuple("TTimelinePost", "id timestamp is_video like_count comment_count")
 
-TStoryReelItem = namedtuple("TStoryReelItem", "id timestamp expire_at audience is_video view_count")
+TStoryReelItem = namedtuple("TStoryReelItem", (
+    "id timestamp expire_at audience is_video view_count display_resources video_resources"
+))
 
 TStoryViewer = namedtuple("TStoryViewer", "id username")
