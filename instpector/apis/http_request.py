@@ -1,6 +1,6 @@
 from enum import Enum
 from urllib.parse import urlencode
-from requests import RequestException
+from requests import RequestException, HTTPError
 
 class HttpRequestMode(Enum):
     JSON = 1
@@ -62,6 +62,18 @@ class HttpRequest:
         except RequestException as req_exception:
             print(f"POST RequestException: {req_exception}")
             return None
+
+    def download_file(self, url, filename):
+        with self._session.get(url, stream=True) as req:
+            try:
+                req.raise_for_status()
+            except HTTPError:
+                print(f"Failed to download file at {url}")
+                return
+            with open(filename, 'wb') as downloaded_file:
+                for chunk in req.iter_content(chunk_size=8192):
+                    if chunk:
+                        downloaded_file.write(chunk)
 
     @classmethod
     def _get_headers(cls, mode, headers):
