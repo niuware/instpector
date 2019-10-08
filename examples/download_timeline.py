@@ -1,18 +1,18 @@
 from sys import argv
 from context import Instpector, endpoints
 
-def download_stories(**options):
+def download_timeline(**options):
     instpector = Instpector()
     if not instpector.login(user=options.get("user"), password=options.get("password")):
         return
 
     profile = endpoints.factory.create("profile", instpector)
-    story_reel = endpoints.factory.create("story_reel", instpector)
+    timeline = endpoints.factory.create("timeline", instpector)
 
     target_profile = profile.of_user(options.get("target_username"))
 
-    for story_item in story_reel.of_user(target_profile.id):
-        story_reel.download(story_item)
+    for post in timeline.of_user(target_profile.id):
+        timeline.download(post)
 
     instpector.logout()
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
             "--target_username {username}"
         ))
         exit(1)
-    download_stories(
+    download_timeline(
         user=argv[2],
         password=argv[4],
         target_username=argv[6]

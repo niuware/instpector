@@ -1,10 +1,8 @@
 # Instpector
 
-A simple Instagram's web API library written in Python. No selenium or webdriver required. 
+A simple Instagram's web API library written in Python. Supports login with two-factor authentication enabled. No selenium or webdriver required.
 
-Supports login with two-factor authentication enabled.
-
-# Installation
+## Installation
 
 ```
 pip install instpector
@@ -16,35 +14,22 @@ pip install instpector
 from instpector import Instpector, endpoints
 
 instpector = Instpector()
-
-# Login into Instagram's web
 instpector.login("my_username", "my_password")
 
-# Get the profile of any user, for example 'some_username'
 profile = endpoints.factory.create("profile", instpector)
+followers = endpoints.factory.create("followers", instpector)
 
 insta_profile = profile.of_user("some_username")
 
-print(insta_profile)
-# id, followers_count, following_count, is_private, ... 
-
-# Iterate all followers of 'some_username'
-followers = endpoints.factory.create("followers", instpector)
-
+# Loop through all followers
 for follower in followers.of_user(insta_profile.id):
-    print(follower)
-    # id, username, full_name, ...
+    print(follower.username)
 
-# Logout
 instpector.logout()
 ```
 
-## Examples
-
-Check out more examples [here](https://github.com/niuware/instpector/tree/master/examples).
-
 ## Using 2FA
-For login in using two-factor authentication, generate your 2fa key on Instagram's app and provide the code when logging in with `instpector`. The following example uses `pytop` to demonstrate the usage:
+For login in using two-factor authentication, generate your 2fa key once on Instagram's app and provide the code when logging in with `instpector`. The following example uses `pytop` to demonstrate the usage:
 
 ```python
 from pyotp import TOTP
@@ -57,7 +42,11 @@ totp = TOTP("my_2fa_key") # Input without spaces
 instpector.login("my_username", "my_password", totp.now())
 ```
 
-# Available endpoints
+# Examples
+
+Check out more examples [here](https://github.com/niuware/instpector/tree/master/examples).
+
+# Endpoints
 
 - Followers   
 - Following   
@@ -72,19 +61,19 @@ More to come
 
 ## Classes
 
-### Instpector
+`Instpector`
 
 |Method|Details|
 |---|---|
-|login(user, password, two_factor_code=None)|Login to an Instagram account. If your account is 2FA protected check the [provided example](https://github.com/niuware/instpector/blob/master/examples/two_factor_auth.py).|
+|login(user, password, two_factor_code=None)|Login to an Instagram account. If your account is 2FA protected provide the 2FA code as in the [provided example](https://github.com/niuware/instpector/blob/master/examples/two_factor_auth.py).|
 |logout()|Logouts from an Instagram account|
 |session()|Returns the current session used by `instpector`|
 
-### EndpointFactory
+`EndpointFactory`
 
 |Method|Details|
 |---|---|
-|create(endpoint_name, instpector_instance)|Creates and returns an endpoint instance based on the provided name. Available names are: `"followers"`, `"following"`, `"profile"`, `"timeline"`, `"story_reel"` and `"story"`|
+|create(endpoint_name, instpector_instance)|Creates and returns an endpoint instance based on the provided name. Available endpoint names are: `"followers"`, `"following"`, `"profile"`, `"timeline"`, `"story_reel"` and `"story"`|
 
 ## Endpoints
 
@@ -94,7 +83,7 @@ Gets the profile of any public or friend user account.
 
 |Method|Details|
 |---|---|
-|of_user(username)|Returns a `TProfile` instance of the provided username.|
+|of_user(username)|Returns a `TProfile` instance for the provided username.|
 
 ### Followers
 
@@ -119,6 +108,7 @@ Endpoint for accessing the timeline of any public or friend account.
 |Method|Details|
 |---|---|
 |of_user(user_id)|Returns a generator of `TTimelinePost` instances with all timeline posts. Note the method receives a user id and not a username. To get the user id use the `Profile` endpoint.|
+|download(timeline_post, only_image=False, low_quality=False)|Downloads and save the available resources (image and video) for the provided `TTimelinePost`. The file name convention is `ownerid_resourceid.extension` and saved in the execution directory. If `low_quality` is `True` the resource will be the downloaded with the lowest size available (only for image). If `only_image` is `True` a video file resource won't be downloaded.|
 
 ### StoryReel
 
@@ -127,7 +117,7 @@ Endpoint for accessing the story reel (stories) of any public or friend user acc
 |Method|Details|
 |---|---|
 |of_user(user_id)|Returns a generator of `TStoryReelItem` instances with all stories. Note the method receives a user id and not a username. To get the user id use the `Profile` endpoint.|
-|download(story_item, low_quality=False)|Downloads and save the available resources (image and video) for the provided `TStoryReelItem`. The files are named using the story's Instagram Id and saved in the execution directory. If `low_quality` is `True` the resource will be the downloaded with the least size available.|
+|download(story_item, only_image=False, low_quality=False)|Downloads and save the available resources (image and video) for the provided `TStoryReelItem`. The file name convention is `ownerid_resourceid.extension` and saved in the execution directory. If `low_quality` is `True` the resource will be the downloaded with the lowest size available. If `only_image` is `True` a video file resource won't be downloaded.|
 
 ### Story
 
@@ -135,7 +125,7 @@ Endpoint for accessing the story details of a story reel item. This endpoint is 
 
 |Method|Details|
 |---|---|
-|viewers_for(story_id)|Returns a generator of `TStoryViewer` instances with all viewers for the provided story id.|
+|viewers_for(story_id)|Returns a generator of `TStoryViewer` instances with all viewers of the provided story id.|
 
 ## Types
 
@@ -143,48 +133,52 @@ Endpoint for accessing the story details of a story reel item. This endpoint is 
 
 |Field|Type|Details|
 |---|---|---|
-|id|string|The Instagram Id of the user|
-|username|string|The user's name|
-|full_name|string|The full name of the user|
-|is_private|bool|A flag to show if the user account is private|
+|id|`string`|The Instagram Id of the user|
+|username|`string`|The user's name|
+|full_name|`string`|The full name of the user|
+|is_private|`bool`|A flag to show if the user account is private|
 
 ### TProfile
 
 |Field|Type|Details|
 |---|---|---|
-|id|string|The Instagram Id of the user|
-|username|string|The user's name|
-|biography|string|The biography of the user|
-|is_private|bool|A flag to show if the user account is private|
-|followers_count|integer|The follower count of the user|
-|following_count|integer|The following count of the user|
+|id|`string`|The Instagram Id of the user|
+|username|`string`|The user's name|
+|biography|`string`|The biography of the user|
+|is_private|`bool`|A flag to show if the user account is private|
+|followers_count|`integer`|The follower count of the user|
+|following_count|`integer`|The following count of the user|
 
 ### TTimelinePost
 |Field|Type|Details|
 |---|---|---|
-|id|string|The Instagram Id of the user|
-|timestamp|integer|The timestamp of the post|
-|is_video|bool|A flag to know if the story is a video|
-|like_count|integer|The like count of the post|
-|comment_count|integer|The comment count of the post|
+|id|`string`|The Instagram Id of the user|
+|owner|`string`|The owner account Instagram Id|
+|timestamp|`integer`|The timestamp of the post|
+|is_video|`bool`|A flag to know if the story is a video|
+|like_count|`integer`|The like count of the post|
+|comment_count|`integer`|The comment count of the post|
+|display_resources|`list`|A list of image URLs associated with the post|
+|video_url|`string`|The video URL (if available) associated with the post|
 
 ### TStoryReelItem
 |Field|Type|Details|
 |---|---|---|
-|id|string|The Instagram Id of the story|
-|timestamp|integer|The timestamp of the story|
-|expire_at|integer|The expiration timestamp of the story|
-|audience|string|The type of audience of the story. If public the value is `MediaAudience.DEFAULT`, if private the value is `MediaAudience.BESTIES`|
-|is_video|bool|A flag to know if the story is a video|
-|view_count|integer|The view count of the story. The count is only available for stories posted by the currently logged in user. Other accounts will have a count equal to `0`.|
-|display_resources|list|A list of images URLs associated with the story|
-|video_resources|list|A list of video URLs associated with the story|
+|id|`string`|The Instagram Id of the story|
+|owner|`string`|The owner account Instagram Id|
+|timestamp|`integer`|The timestamp of the story|
+|expire_at|`integer`|The expiration timestamp of the story|
+|audience|`string`|The type of audience of the story. If public the value is `MediaAudience.DEFAULT`, if private the value is `MediaAudience.BESTIES`|
+|is_video|`bool`|A flag to know if the story is a video|
+|view_count|`integer`|The view count of the story. The count is only available for stories posted by the currently logged in user. Other accounts will have a count equal to `0`.|
+|display_resources|`list`|A list of image URLs associated with the story|
+|video_resources|`list`|A list of video URLs associated with the story|
 
 ### TStoryViewer
 |Field|Type|Details|
 |---|---|---|
-|id|string|The Instagram Id of the story viewer|
-|username|string|The user name of the viewer|
+|id|`string`|The Instagram Id of the story viewer|
+|username|`string`|The user name of the viewer|
 
 # Development dependencies
 
