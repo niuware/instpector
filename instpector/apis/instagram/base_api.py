@@ -19,3 +19,13 @@ class BaseApi(HttpRequest):
             except json.decoder.JSONDecodeError:
                 raise ParseDataException
         return None
+
+    def _download_resources_list(self, item, name, extension, low_quality):
+        try:
+            resources = getattr(item, name)
+        except AttributeError:
+            return
+        if resources:
+            quality = (len(resources) - 1) if not low_quality else 0
+            file_name = f"{item.owner}_{item.id}.{extension}"
+            super().download_file(resources[quality], file_name)

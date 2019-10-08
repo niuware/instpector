@@ -13,3 +13,10 @@ class Timeline(BaseGraphQL):
                           variables=variables,
                           page_info_parser="edge_owner_to_timeline_media",
                           data_parser=Parser.timeline)
+
+    def download(self, timeline_post, only_image=False, low_quality=False):
+        super()._download_resources_list(timeline_post, "display_resources", "jpg", low_quality)
+        if not only_image:
+            if timeline_post.video_url:
+                file_name = f"{timeline_post.owner}_{timeline_post.id}.mp4"
+                super().download_file(timeline_post.video_url, file_name)
