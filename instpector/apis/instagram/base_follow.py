@@ -3,9 +3,9 @@ from .base_graph_ql import BaseGraphQL
 
 class BaseFollow(BaseGraphQL):
 
-    def __init__(self, query_hash, browser_session):
+    def __init__(self, query_hash, instance):
         self._query_hash = query_hash
-        super().__init__(browser_session)
+        super().__init__(instance)
 
     def _get_all(self, user_id, page_info_parser, parse_cb):
         variables = {

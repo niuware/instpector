@@ -20,6 +20,15 @@ class BaseApi(HttpRequest):
                 raise ParseDataException
         return None
 
+    def post(self, url_path, data=None, **options):
+        response = super().post(url_path, data or {}, **options)
+        if response.status_code == 200:
+            try:
+                return json.loads(response.text)
+            except json.decoder.JSONDecodeError:
+                raise ParseDataException
+        return None
+
     def _download_resources_list(self, item, name, extension, low_quality):
         try:
             resources = getattr(item, name)

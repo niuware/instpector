@@ -109,6 +109,8 @@ Endpoint for accessing the timeline of any public or friend account.
 |---|---|
 |of_user(user_id)|Returns a generator of `TTimelinePost` instances with all timeline posts. Note the method receives a user id and not a username. To get the user id use the `Profile` endpoint.|
 |download(timeline_post, only_image=False, low_quality=False)|Downloads and save the available resources (image and video) for the provided `TTimelinePost`. The file name convention is `ownerid_resourceid.extension` and saved in the execution directory. If `low_quality` is `True` the resource will be the downloaded with the lowest size available (only for image). If `only_image` is `True` a video file resource won't be downloaded.|
+|like(timeline_post)|Likes a timeline post (`TTimelinePost`).|
+|unlike(timeline_post)|Unlikes a timeline post (`TTimelinePost`).|
 
 ### StoryReel
 

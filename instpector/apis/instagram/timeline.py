@@ -20,3 +20,23 @@ class Timeline(BaseGraphQL):
             if timeline_post.video_url:
                 file_name = f"{timeline_post.owner}_{timeline_post.id}.mp4"
                 super().download_file(timeline_post.video_url, file_name)
+
+    def _toggle_like(self, timeline_post, action):
+        endpoint = 'like' if action == 'like' else 'unlike'
+        post_id = getattr(timeline_post, "id", None)
+        if post_id is None:
+            return False
+        response = self.post("/web/likes/" + post_id + "/" + endpoint + "/",
+                             use_auth=True,
+                             headers={
+                                 "Content-Type": "application/x-www-form-urlencoded"
+                             })
+        if response and response.get("status") == "ok":
+            return True
+        return False
+
+    def unlike(self, timeline_post):
+        return self._toggle_like(timeline_post, 'unlike')
+
+    def like(self, timeline_post):
+        return self._toggle_like(timeline_post, 'like')

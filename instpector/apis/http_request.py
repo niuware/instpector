@@ -23,17 +23,16 @@ class HttpRequest:
         "X-Requested-With": "XMLHttpRequest"
     }
 
-    def __init__(self, base_url, session):
+    def __init__(self, base_url, instance):
         self._base_url = base_url
-        self._session = session
+        self._auth_headers = instance.auth_headers()
+        self._session = instance.session()
 
     def session(self):
         return self._session
 
     def get(self, url_path, **options):
-        request_headers = self._get_headers(
-            options.get("mode", HttpRequestMode.JSON),
-            options.get("headers"))
+        request_headers = self._get_headers(**options)
         get_params = {}
         if options.get("params"):
             get_params = options.get("params")
@@ -48,9 +47,7 @@ class HttpRequest:
             return None
 
     def post(self, url_path, data, **options):
-        request_headers = self._get_headers(
-            options.get("mode", HttpRequestMode.JSON),
-            options.get("headers"))
+        request_headers = self._get_headers(**options)
         post_data = urlencode(data)
         post_headers = {**request_headers, "Content-Length": str(len(post_data))}
         try:
@@ -75,16 +72,26 @@ class HttpRequest:
                     if chunk:
                         downloaded_file.write(chunk)
 
-    @classmethod
-    def _get_headers(cls, mode, headers):
+    def _get_headers(self, **options): #mode, headers, use_auth=False):
         request_headers = {}
         custom_headers = {}
+        auth_headers = {}
+        mode = options.pop("mode", HttpRequestMode.JSON)
+        headers = options.pop("headers", None)
+        use_auth = options.pop("use_auth", False)
+        # JSON Request headers
         if mode == HttpRequestMode.JSON:
             request_headers = HttpRequest.JSON_HEADERS
+        # Form Request headers
         if mode == HttpRequestMode.FORM:
             request_headers = HttpRequest.FORM_HEADERS
+        # Custom headers
         if headers:
             custom_headers = headers
+        # Authenticated headers
+        if use_auth:
+            auth_headers = self._auth_headers
         return {**HttpRequest.BROWSER_HEADERS,
                 **request_headers,
-                **custom_headers}
+                **custom_headers,
+                **auth_headers}

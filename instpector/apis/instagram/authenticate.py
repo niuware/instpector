@@ -6,14 +6,14 @@ from .utilities import get_ajax_id, get_consumer_lib_path, get_app_id
 
 class Authenticate(HttpRequest):
 
-    def __init__(self, browser_session, user, password, two_factor_code):
+    def __init__(self, instance, user, password, two_factor_code):
         self._user = user
         self._password = password
         self._two_factor_code = two_factor_code
-        self._app_info = None
+        self._app_info = {}
         self._auth_headers = {}
         self._auth_cookies = {}
-        super().__init__("https://www.instagram.com", browser_session)
+        super().__init__("https://www.instagram.com", instance)
 
     def login(self):
         self._login_prepare()
@@ -23,7 +23,7 @@ class Authenticate(HttpRequest):
         raise AuthenticateFailException("Login prepare unsuccessful")
 
     def logout(self):
-        if not self._auth_cookies or not self._auth_cookies.get("csrftoken"):
+        if not self.is_logged_in():
             raise AuthenticateRevokeException("No session information found.")
         headers = {
             "Referer": f"https://www.instagram.com/{self._user}",
@@ -40,6 +40,16 @@ class Authenticate(HttpRequest):
         if not response or response.status_code != 301:
             raise AuthenticateRevokeException("Logout unsuccessful")
         print("Logged out")
+
+    def is_logged_in(self):
+        return self._auth_cookies and self._auth_cookies.get("csrftoken")
+
+    def get_auth_headers(self):
+        return {
+            "X-CSRFToken": self._auth_cookies.get("csrftoken", ""),
+            "X-Instagram-AJAX": self._app_info.get("ig_ajax_id", ""),
+            "X-IG-App-ID": self._app_info.get("ig_app_id", "")
+        }
 
     def _lookup_headers(self):
         html = self.get("/", stream=True)
@@ -61,10 +71,8 @@ class Authenticate(HttpRequest):
             return
         self._auth_headers = response.cookies.get_dict(".instagram.com")
         app_id, ajax_id = self._lookup_headers()
-        self._app_info = {
-            "ig_app_id": app_id,
-            "ig_ajax_id": ajax_id
-        }
+        self._app_info['ig_app_id'] = app_id
+        self._app_info['ig_ajax_id'] = ajax_id
 
     def _login_execute(self):
         data = {
@@ -85,13 +93,13 @@ class Authenticate(HttpRequest):
         self._attempt_login("/accounts/login/ajax/two_factor/", data)
 
     def _attempt_login(self, url, data, use_2fa=False):
-        headers = {
+        auth_headers = self.get_auth_headers()
+        auth_headers['X-CSRFToken'] = self._auth_headers.get("csrftoken")
+        post_headers = {
             "Referer": "https://www.instagram.com/accounts/login/?source=auth_switcher",
-            "X-CSRFToken": self._auth_headers.get("csrftoken"),
-            "X-Instagram-AJAX": self._app_info.get("ig_ajax_id", ""),
-            "X-IG-App-ID": self._app_info.get("ig_app_id", ""),
             "Content-Type": "application/x-www-form-urlencoded",
         }
+        headers = {**post_headers, **auth_headers}
         response = self.post(url,
                              data=data,
                              headers=headers,

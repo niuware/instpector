@@ -10,4 +10,4 @@ class EndpointFactory:
         if not endpoint:
             print(f"No endpoint '{endpoint_name}' available.")
             raise ValueError(endpoint_name)
-        return endpoint(instpector.session())
+        return endpoint(instpector)
