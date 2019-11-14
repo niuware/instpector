@@ -10,6 +10,10 @@ def get_timeline(**options):
 
     for post in timeline.of_user(options.get("target_user_id")):
         print(post)
+        ### Like a post:
+        # timeline.like(post)
+        ### Unlike a post:
+        # timeline.unlike(post)
 
     instpector.logout()
 

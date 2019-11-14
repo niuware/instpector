@@ -8,8 +8,8 @@ from .definitions import TPageInfo
 class BaseGraphQL(BaseApi):
     DEFAULT_EDGE_COUNT = 12
 
-    def __init__(self, browser_session):
-        super().__init__("https://www.instagram.com", browser_session)
+    def __init__(self, instance):
+        super().__init__("https://www.instagram.com", instance)
 
     def _loop(self, query_hash, variables, **parser_callbacks):
         page_info = TPageInfo(end_cursor=None, has_next_page=True)

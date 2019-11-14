@@ -14,8 +14,13 @@ class Instpector:
     def session(self):
         return self._browser_session
 
+    def auth_headers(self):
+        if self._auth and self._auth.is_logged_in():
+            return self._auth.get_auth_headers()
+        return {}
+
     def login(self, user, password, two_factor_code=None):
-        self._auth = Authenticate(self._browser_session, user, password, two_factor_code)
+        self._auth = Authenticate(self, user, password, two_factor_code)
         try:
             self._auth.login()
             return True

@@ -5,8 +5,8 @@ from .parser import Parser
 
 class Profile(BaseApi):
 
-    def __init__(self, browser_session):
-        super().__init__("https://www.instagram.com", browser_session)
+    def __init__(self, instance):
+        super().__init__("https://www.instagram.com", instance)
 
     def of_user(self, username):
         params = {
