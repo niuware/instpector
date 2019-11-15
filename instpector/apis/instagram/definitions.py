@@ -9,7 +9,8 @@ TProfile = namedtuple("TProfile", (
 ))
 
 TTimelinePost = namedtuple("TTimelinePost", (
-    "id owner timestamp is_video like_count comment_count display_resources video_url shortcode"
+    "id owner timestamp is_video like_count comment_count display_resources "
+    "video_url shortcode caption"
 ))
 
 TStoryReelItem = namedtuple("TStoryReelItem", (

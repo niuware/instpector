@@ -29,6 +29,16 @@ class BaseApi(HttpRequest):
                 raise ParseDataException
         return None
 
+    def quick_post(self, url_path, data=None, **options):
+        response = self.post(url_path, data=data, use_auth=True,
+                             headers={
+                                 "Content-Type": "application/x-www-form-urlencoded"
+                             },
+                             **options)
+        if response and response.get("status") == "ok":
+            return True
+        return False
+
     def _download_resources_list(self, item, name, extension, low_quality):
         try:
             resources = getattr(item, name)
