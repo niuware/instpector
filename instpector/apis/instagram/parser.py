@@ -60,6 +60,10 @@ class Parser:
             comments = node.get("edge_media_to_comment") or {}
             display_resources = node.get("display_resources") or {}
             owner = node.get("owner") or {}
+            edge_caption = node.get("edge_media_to_caption") or {}
+            caption_edges = edge_caption.get("edges") or []
+            node_caption = caption_edges[0] if caption_edges else {}
+            caption = node_caption.get("node") or {}
             post = TTimelinePost(
                 id=node.get("id", ""),
                 owner=owner.get("id", ""),
@@ -69,7 +73,8 @@ class Parser:
                 comment_count=comments.get("count", 0),
                 display_resources=list(map(lambda res: res.get("src"), display_resources)),
                 video_url=node.get("video_url"),
-                shortcode=node.get("shortcode")
+                shortcode=node.get("shortcode"),
+                caption=caption.get("text", "")
             )
             yield post
 

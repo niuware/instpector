@@ -1,5 +1,6 @@
 from .like_graph_ql import LikeGraphQL
 from .parser import Parser
+from .definitions import TComment
 
 
 class Comments(LikeGraphQL):
@@ -34,3 +35,41 @@ class Comments(LikeGraphQL):
                           page_info_parser="edge_threaded_comments",
                           page_info_parser_path="comment",
                           data_parser=Parser.threaded_comments)
+
+    def add(self, timeline_post, text, parent_comment=None):
+        post_id = getattr(timeline_post, "id", None)
+        if post_id is None:
+            return False
+        comment_id = getattr(parent_comment, "id") if parent_comment else ""
+        data = {
+            "comment_text": text,
+            "replied_to_comment_id": comment_id,
+        }
+        response = self.post("/web/comments/{id}/add/".format(id=post_id),
+                             data=data, use_auth=True,
+                             headers={
+                                 "Content-Type": "application/x-www-form-urlencoded"
+                             })
+        if response and response.get("status") == "ok":
+            owner = response.get("from") or {}
+            thread_count = 0 if comment_id == "" else None
+            return TComment(
+                id=response.get("id", ""),
+                text=response.get("text", ""),
+                timestamp=response.get("created_time"),
+                username=owner.get("username", ""),
+                viewer_has_liked=False,
+                liked_count=0,
+                thread_count=thread_count
+            )
+        return None
+
+    def remove(self, timeline_post, comment):
+        post_id = getattr(timeline_post, "id", None)
+        if post_id is None:
+            return False
+        comment_id = getattr(comment, "id", None)
+        if comment_id is None:
+            return False
+        url = "/web/comments/{id}/delete/{comment_id}/"
+        return self.quick_post(url.format(id=post_id, comment_id=comment_id))

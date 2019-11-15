@@ -123,6 +123,8 @@ Endponint for accessing comments and threaded comments of any public or friends 
 |of_comment(comment: `TComment`)|Returns a generator of `TComment` instances with all threaded comments of a comment.|
 |like(comment: `TComment`)|Likes a comment.|
 |unlike(comment: `TComment`)|Unlikes a comment.|
+|add(timeline_post: `TTimelinePost`, text: `string`, parent_comment: `TComment` = None) -> `TComment` \| `None`|Adds a new comment to a post. You can reply to a comment if `parent_comment` argument is provided. An instance of the created comment is return if succeeded otherwise `None`.|
+|remove(timeline_post: `TTimelinePost`, comment: `TComment`)|Removes a comment from a post. Only comments authored by the current logged in account can be removed.|
 
 ### StoryReel
 
@@ -166,20 +168,22 @@ Endpoint for accessing the story details of a story reel item. This endpoint is 
 ### TTimelinePost
 |Field|Type|Details|
 |---|---|---|
-|id|`string`|The Instagram Id of the user|
-|owner|`string`|The owner account Instagram Id|
-|timestamp|`integer`|The timestamp of the post|
-|is_video|`bool`|A flag to know if the story is a video|
+|id|`string`|The Instagram Id of the post|
+|shortcode|`string`|The Instagram shortcode Id of the post|
+|owner|`string`|The post author's Instagram Id|
+|timestamp|`integer`|The created timestamp of the post|
+|caption|`string`|The caption of the post|
+|is_video|`bool`|A flag to know if the post is a video|
 |like_count|`integer`|The like count of the post|
 |comment_count|`integer`|The comment count of the post|
-|display_resources|`list`|A list of image URLs associated with the post|
+|display_resources|`list`|A list of image URL strings associated with the post|
 |video_url|`string`|The video URL (if available) associated with the post|
 
 ### TComment
 |Field|Type|Details|
 |---|---|---|
 |id|`string`|The Instagram Id of the comment|
-|text|`string`|The comment text|
+|text|`string`|The text of the comment|
 |username|`string`|The author's username|
 |timestamp|`integer`|The timestamp of the comment|
 |viewer_has_liked|`bool`|A flag to know if the viewer liked the comment|
@@ -190,14 +194,14 @@ Endpoint for accessing the story details of a story reel item. This endpoint is 
 |Field|Type|Details|
 |---|---|---|
 |id|`string`|The Instagram Id of the story|
-|owner|`string`|The owner account Instagram Id|
-|timestamp|`integer`|The timestamp of the story|
+|owner|`string`|The story author's Instagram Id|
+|timestamp|`integer`|The created timestamp of the story|
 |expire_at|`integer`|The expiration timestamp of the story|
 |audience|`string`|The type of audience of the story. If public the value is `MediaAudience.DEFAULT`, if private the value is `MediaAudience.BESTIES`|
 |is_video|`bool`|A flag to know if the story is a video|
 |view_count|`integer`|The view count of the story. The count is only available for stories posted by the currently logged in user. Other accounts will have a count equal to `0`.|
-|display_resources|`list`|A list of image URLs associated with the story|
-|video_resources|`list`|A list of video URLs associated with the story|
+|display_resources|`list`|A list of image URL strings associated with the story|
+|video_resources|`list`|A list of video URL strings associated with the story|
 
 ### TStoryViewer
 |Field|Type|Details|

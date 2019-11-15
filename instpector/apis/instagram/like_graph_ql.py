@@ -12,14 +12,7 @@ class LikeGraphQL(BaseGraphQL):
         obj_id = getattr(obj, "id", None)
         if obj_id is None:
             return False
-        response = self.post(self._url.format(action=endpoint, id=obj_id),
-                             use_auth=True,
-                             headers={
-                                 "Content-Type": "application/x-www-form-urlencoded"
-                             })
-        if response and response.get("status") == "ok":
-            return True
-        return False
+        return self.quick_post(self._url.format(action=endpoint, id=obj_id))
 
     def unlike(self, obj):
         return self._toggle_like(obj, 'unlike')
