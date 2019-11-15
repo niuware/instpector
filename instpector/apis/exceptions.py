@@ -12,3 +12,6 @@ class ParseDataException(InstpectorException):
 
 class NotImplementedException(InstpectorException):
     pass
+
+class NoDataException(InstpectorException):
+    pass

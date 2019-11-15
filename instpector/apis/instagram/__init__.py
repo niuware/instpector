@@ -6,6 +6,7 @@ from .profile import Profile
 from .timeline import Timeline
 from .story_reel import StoryReel
 from .story import Story
+from .comments import Comments
 
 __all__ = ["Authenticate",
            "Followers",
@@ -14,5 +15,6 @@ __all__ = ["Authenticate",
            "Profile",
            "Timeline",
            "StoryReel",
-           "Story"
+           "Story",
+           "Comments"
           ]

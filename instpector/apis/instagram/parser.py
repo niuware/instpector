@@ -1,4 +1,6 @@
-from .definitions import TUser, TPageInfo, TProfile, TTimelinePost, TStoryReelItem, TStoryViewer
+from .definitions import TUser, TPageInfo, TProfile, TTimelinePost, \
+    TStoryReelItem, TStoryViewer, TComment
+from ..exceptions import NoDataException
 
 
 class Parser:
@@ -66,7 +68,8 @@ class Parser:
                 like_count=likes.get("count", 0),
                 comment_count=comments.get("count", 0),
                 display_resources=list(map(lambda res: res.get("src"), display_resources)),
-                video_url=node.get("video_url")
+                video_url=node.get("video_url"),
+                shortcode=node.get("shortcode")
             )
             yield post
 
@@ -76,7 +79,10 @@ class Parser:
         data_root = data.get("data") or {}
         root = data_root.get(data_path) or {}
         endpoint_root = root.get(endpoint) or {}
-        return endpoint_root.get("edges") or []
+        edges = endpoint_root.get("edges")
+        if not edges:
+            raise NoDataException
+        return edges
 
     @staticmethod
     def story_reel(data):
@@ -104,11 +110,45 @@ class Parser:
 
     @staticmethod
     def story(data):
-        edges = Parser._get_edges(data, "edge_story_media_viewers", "media")
-        for edge in edges:
+        for edge in Parser._get_edges(data, "edge_story_media_viewers", "media"):
             node = edge.get("node") or {}
             viewer = TStoryViewer(
                 id=node.get("id"),
                 username=node.get("username")
             )
             yield viewer
+
+    @staticmethod
+    def parent_comments(data):
+        for edge in Parser._get_edges(data, "edge_media_to_parent_comment", "shortcode_media"):
+            node = edge.get("node") or {}
+            owner = node.get("owner") or {}
+            edge_liked = node.get("edge_liked_by") or {}
+            edge_threaded = node.get("edge_threaded_comments") or {}
+            comment = TComment(
+                id=node.get("id", ""),
+                text=node.get("text", ""),
+                timestamp=node.get("created_at"),
+                username=owner.get("username", ""),
+                viewer_has_liked=node.get("viewer_has_liked", False),
+                liked_count=edge_liked.get("count", 0),
+                thread_count=edge_threaded.get("count", 0)
+            )
+            yield comment
+
+    @staticmethod
+    def threaded_comments(data):
+        for edge in Parser._get_edges(data, "edge_threaded_comments", "comment"):
+            node = edge.get("node") or {}
+            owner = node.get("owner") or {}
+            edge_liked = node.get("edge_liked_by") or {}
+            comment = TComment(
+                id=node.get("id", ""),
+                text=node.get("text", ""),
+                timestamp=node.get("created_at"),
+                username=owner.get("username", ""),
+                viewer_has_liked=node.get("viewer_has_liked", False),
+                liked_count=edge_liked.get("count", 0),
+                thread_count=None
+            )
+            yield comment
