@@ -1,5 +1,5 @@
 import json
-from ..exceptions import ParseDataException
+from ..exceptions import ParseDataException, NoDataException
 from .base_api import BaseApi
 from .parser import Parser
 from .definitions import TPageInfo
@@ -22,8 +22,11 @@ class BaseGraphQL(BaseApi):
             if data:
                 page_info = Parser.page_info(data, parser_callbacks.get("page_info_parser"),
                                              parser_callbacks.get("page_info_parser_path"))
-                for result in parser_callbacks.get("data_parser")(data):
-                    yield result
+                try:
+                    for result in parser_callbacks.get("data_parser")(data):
+                        yield result
+                except NoDataException:
+                    return
 
     def _get_partial_data(self, query_hash, variables, end_cursor, cursor_name):
         cursor_name = cursor_name or "after"

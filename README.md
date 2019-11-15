@@ -29,7 +29,7 @@ instpector.logout()
 ```
 
 ## Using 2FA
-For login in using two-factor authentication, generate your 2fa key once on Instagram's app and provide the code when logging in with `instpector`. The following example uses `pytop` to demonstrate the usage:
+For login in using two-factor authentication, generate your 2fa key once on the  Instagram's app and provide the code when logging in with `instpector`. The following example uses `pytop` library to demonstrate the usage:
 
 ```python
 from pyotp import TOTP
@@ -51,6 +51,7 @@ Check out more examples [here](https://github.com/niuware/instpector/tree/master
 - Followers   
 - Following   
 - Timeline   
+- Comments
 - Profile   
 - Story Reel    
 - Story    
@@ -65,7 +66,7 @@ More to come
 
 |Method|Details|
 |---|---|
-|login(user, password, two_factor_code=None)|Login to an Instagram account. If your account is 2FA protected provide the 2FA code as in the [provided example](https://github.com/niuware/instpector/blob/master/examples/two_factor_auth.py).|
+|login(user: `string`, password: `string`, two_factor_code: `string` = None)|Login to an Instagram account. If your account is 2FA protected provide the 2FA code as in the [provided example](https://github.com/niuware/instpector/blob/master/examples/two_factor_auth.py).|
 |logout()|Logouts from an Instagram account|
 |session()|Returns the current session used by `instpector`|
 
@@ -73,7 +74,7 @@ More to come
 
 |Method|Details|
 |---|---|
-|create(endpoint_name, instpector_instance)|Creates and returns an endpoint instance based on the provided name. Available endpoint names are: `"followers"`, `"following"`, `"profile"`, `"timeline"`, `"story_reel"` and `"story"`|
+|create(endpoint_name: `string`, instpector_instance: `Instpector`)|Creates and returns an endpoint instance based on the provided name. Available endpoint names are: `"followers"`, `"following"`, `"profile"`, `"timeline"`, `"comments"` `"story_reel"` and `"story"`|
 
 ## Endpoints
 
@@ -83,7 +84,7 @@ Gets the profile of any public or friend user account.
 
 |Method|Details|
 |---|---|
-|of_user(username)|Returns a `TProfile` instance for the provided username.|
+|of_user(username: `string`)|Returns a `TProfile` instance for the provided username.|
 
 ### Followers
 
@@ -91,7 +92,7 @@ Endpoint for accessing the follower list of any public or friend user account.
 
 |Method|Details|
 |---|---|
-|of_user(user_id)|Returns a generator of `TUser` instances with all followers. Note the method receives a user id and not a username. To get the user id use the `Profile` endpoint.|
+|of_user(user_id: `string`)|Returns a generator of `TUser` instances with all followers. Note the method receives a user id and not a username. To get the user id use the `Profile` endpoint.|
 
 ### Following
 
@@ -99,7 +100,7 @@ Endpoint for accessing the followees list of any public or friend user account.
 
 |Method|Details|
 |---|---|
-|of_user(user_id)|Returns a generator of `TUser` instances with all followees. Note the method receives a user id and not a username. To get the user id use the `Profile` endpoint.|
+|of_user(user_id: `string`)|Returns a generator of `TUser` instances with all followees. Note the method receives a user id and not a username. To get the user id use the `Profile` endpoint.|
 
 ### Timeline
 
@@ -107,10 +108,21 @@ Endpoint for accessing the timeline of any public or friend account.
 
 |Method|Details|
 |---|---|
-|of_user(user_id)|Returns a generator of `TTimelinePost` instances with all timeline posts. Note the method receives a user id and not a username. To get the user id use the `Profile` endpoint.|
-|download(timeline_post, only_image=False, low_quality=False)|Downloads and save the available resources (image and video) for the provided `TTimelinePost`. The file name convention is `ownerid_resourceid.extension` and saved in the execution directory. If `low_quality` is `True` the resource will be the downloaded with the lowest size available (only for image). If `only_image` is `True` a video file resource won't be downloaded.|
-|like(timeline_post)|Likes a timeline post (`TTimelinePost`).|
-|unlike(timeline_post)|Unlikes a timeline post (`TTimelinePost`).|
+|of_user(user_id: `string`)|Returns a generator of `TTimelinePost` instances with all timeline posts. Note the method receives a user id and not a username. To get the user id use the `Profile` endpoint.|
+|download(timeline_post: `TTimelinePost`, only_image: `bool` = False, low_quality: `bool` = False)|Downloads and save the available resources (image and video) for the provided `TTimelinePost`. The file name convention is `ownerid_resourceid.extension` and saved in the execution directory. If `low_quality` is `True` the resource will be the downloaded with the lowest size available (only for image). If `only_image` is `True` a video file resource won't be downloaded.|
+|like(timeline_post: `TTimelinePost`)|Likes a timeline post.|
+|unlike(timeline_post: `TTimelinePost`)|Unlikes a timeline post.|
+
+### Comments
+
+Endponint for accessing comments and threaded comments of any public or friends post or comment.
+
+|Method|Details|
+|---|---|
+|of_post(timeline_post: `TTimelinePost`)|Returns a generator of `TComment` instances with all post comments.|
+|of_comment(comment: `TComment`)|Returns a generator of `TComment` instances with all threaded comments of a comment.|
+|like(comment: `TComment`)|Likes a comment.|
+|unlike(comment: `TComment`)|Unlikes a comment.|
 
 ### StoryReel
 
@@ -118,8 +130,8 @@ Endpoint for accessing the story reel (stories) of any public or friend user acc
 
 |Method|Details|
 |---|---|
-|of_user(user_id)|Returns a generator of `TStoryReelItem` instances with all stories. Note the method receives a user id and not a username. To get the user id use the `Profile` endpoint.|
-|download(story_item, only_image=False, low_quality=False)|Downloads and save the available resources (image and video) for the provided `TStoryReelItem`. The file name convention is `ownerid_resourceid.extension` and saved in the execution directory. If `low_quality` is `True` the resource will be the downloaded with the lowest size available. If `only_image` is `True` a video file resource won't be downloaded.|
+|of_user(user_id: `string`)|Returns a generator of `TStoryReelItem` instances with all stories. Note the method receives a user id and not a username. To get a user id use the `Profile` endpoint.|
+|download(story_item: `TStoryReelItem`, only_image: `bool` = False, low_quality: `bool` = False)|Downloads and save the available resources (image and video) for the provided `TStoryReelItem`. The file name convention is `ownerid_resourceid.extension` and saved in the execution directory. If `low_quality` is `True` the resource will be the downloaded with the lowest size available. If `only_image` is `True` a video file resource won't be downloaded.|
 
 ### Story
 
@@ -127,7 +139,7 @@ Endpoint for accessing the story details of a story reel item. This endpoint is 
 
 |Method|Details|
 |---|---|
-|viewers_for(story_id)|Returns a generator of `TStoryViewer` instances with all viewers of the provided story id.|
+|viewers_for(story_id: `string`)|Returns a generator of `TStoryViewer` instances with all viewers of the provided story id.|
 
 ## Types
 
@@ -162,6 +174,17 @@ Endpoint for accessing the story details of a story reel item. This endpoint is 
 |comment_count|`integer`|The comment count of the post|
 |display_resources|`list`|A list of image URLs associated with the post|
 |video_url|`string`|The video URL (if available) associated with the post|
+
+### TComment
+|Field|Type|Details|
+|---|---|---|
+|id|`string`|The Instagram Id of the comment|
+|text|`string`|The comment text|
+|username|`string`|The author's username|
+|timestamp|`integer`|The timestamp of the comment|
+|viewer_has_liked|`bool`|A flag to know if the viewer liked the comment|
+|liked_count|`integer`|The like count of the comment|
+|thread_count|`integer` \| `None`|The comment's thread comments count. This value is `None` if the instance is a threaded comment.|
 
 ### TStoryReelItem
 |Field|Type|Details|
