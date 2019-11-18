@@ -22,3 +22,9 @@ TStoryViewer = namedtuple("TStoryViewer", "id username")
 TComment = namedtuple("TComment", (
     "id text timestamp username viewer_has_liked liked_count, thread_count"
 ))
+
+TActivity = namedtuple("TActivity", "id timestamp username activity_type liked_post")
+
+TActivityPost = namedtuple("TActivityPost", (
+    "id shortcode thumbnail_resources"
+))

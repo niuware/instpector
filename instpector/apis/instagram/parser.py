@@ -1,5 +1,5 @@
 from .definitions import TUser, TPageInfo, TProfile, TTimelinePost, \
-    TStoryReelItem, TStoryViewer, TComment
+    TStoryReelItem, TStoryViewer, TComment, TActivity, TActivityPost
 from ..exceptions import NoDataException
 
 
@@ -79,9 +79,9 @@ class Parser:
             yield post
 
     @staticmethod
-    def _get_edges(data, endpoint, d_path=None):
+    def _get_edges(data, endpoint, d_path=None, r_path='data'):
         data_path = d_path or "user"
-        data_root = data.get("data") or {}
+        data_root = data.get(r_path) or {}
         root = data_root.get(data_path) or {}
         endpoint_root = root.get(endpoint) or {}
         edges = endpoint_root.get("edges")
@@ -157,3 +157,27 @@ class Parser:
                 thread_count=None
             )
             yield comment
+
+    @staticmethod
+    def activity(data):
+        graphql = data.get("graphql") or {}
+        for edge in Parser._get_edges(graphql, "edge_web_activity_feed", "activity_feed", "user"):
+            node = edge.get("node") or {}
+            liked_media = node.get("media") or {}
+            liked_post = None
+            user = node.get("user") or {}
+            if liked_media:
+                liked_post = TActivityPost(
+                    id=liked_media.get("id"),
+                    thumbnail_resources=list(map(lambda res: res.get("src"),
+                                                 liked_media.get("thumbnail_resources", []))),
+                    shortcode=liked_media.get("shortcode")
+                )
+            activity = TActivity(
+                id=node.get("id", ""),
+                username=user.get("username"),
+                timestamp=node.get("timestamp"),
+                liked_post=liked_post,
+                activity_type="NEW_LIKE" if liked_post else "NEW_FOLLOW"
+            )
+            yield activity
