@@ -14,7 +14,7 @@ def get_profile(**options):
 
     profile = endpoints.factory.create("profile", instpector)
 
-    print(profile.of_user("dwgran"))
+    print(profile.of_user("target_user_name"))
 
     instpector.logout()
 
