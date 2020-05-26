@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from ..http_request import HttpRequest, HttpRequestMode
 from ..exceptions import AuthenticateFailException, AuthenticateRevokeException
 from .utilities import get_ajax_id, get_consumer_lib_path, get_app_id
@@ -75,9 +76,10 @@ class Authenticate(HttpRequest):
         self._app_info['ig_ajax_id'] = ajax_id
 
     def _login_execute(self):
+        nonce = str(int(datetime.now().timestamp()))
         data = {
             "username": self._user,
-            "password": self._password,
+            "enc_password": '#PWD_INSTAGRAM_BROWSER:0:' + nonce + ':' + self._password,
             "queryParams": "{\"source\":\"auth_switcher\"}",
             "optIntoOneTap": "true"
         }
